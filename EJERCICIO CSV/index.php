@@ -11,24 +11,32 @@ function dump($var){
     echo '<pre>'.print_r($var,1).'</pre>';
 }
 
+$personaje=random_int(0,144);
+
+
 
 //Función lógica presentación
-function getTableroMarkup ($tablero){
+function getTableroMarkup ($tablero,$fila,$col){
     $output = '';
-    $rand= random_int(0,144);
-    $cont = 0;
+    $contFila = 0;
+    $contCol = 0;
+
     //dump($tablero);
     foreach ($tablero as $filaIndex => $datosFila) {
+        $contFila++;
         foreach ($datosFila as $columnaIndex => $tileType) {
+
             //dump($tileType);
-            $cont++;
-            if($cont == $rand){
+            $contCol++;
+            
+            if($contFila == $fila && $contCol==$col){
             $output .= '<div class = "tile ' . $tileType . '"><img src="bicho.png" width: 25px; height : 25px;/></div>';
             }else{
             $output .= '<div class = "tile ' . $tileType . '"></div>';
 
             }
         }
+        $contCol = 0;
     }
 
     return $output;
@@ -40,6 +48,12 @@ function getTableroMarkup ($tablero){
 //fuego
 //tierra
 // hierba
+
+
+
+
+
+
 function leerArchivoCSV($rutaArchivoCSV) {
     $tablero = [];
 
@@ -55,13 +69,16 @@ function leerArchivoCSV($rutaArchivoCSV) {
 
 
 
+$fila=$_GET['fila'];
+$col=$_GET['col'];
+
 
 
 
 $tablero = leerArchivoCSV('archivo.csv');
 
 //Lógica de presentación
-$tableroMarkup = getTableroMarkup($tablero);
+$tableroMarkup = getTableroMarkup($tablero,$fila,$col);
 
 
 ?>
