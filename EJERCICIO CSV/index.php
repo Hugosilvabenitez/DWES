@@ -6,74 +6,103 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 /* Zona de declaración de funciones */
-// Función de debugueo
+//Funciones de debugueo
 function dump($var){
     echo '<pre>'.print_r($var,1).'</pre>';
 }
 
-// Función lógica presentación
-function getTableroMarkup($tableroData){
+
+//Función lógica presentación
+function getTableroMarkup ($tablero){
     $output = '';
-    
-    foreach($tableroData as $filaIndex => $datosFila){
-        foreach($datosFila as $columnaIndex => $tileType){
-            $output .= '<div class="tile '.$tileType.'"></div>';
+    $rand= random_int(0,144);
+    $cont = 0;
+    //dump($tablero);
+    foreach ($tablero as $filaIndex => $datosFila) {
+        foreach ($datosFila as $columnaIndex => $tileType) {
+            //dump($tileType);
+            $cont++;
+            if($cont == $rand){
+            $output .= '<div class = "tile ' . $tileType . '"><img src="bicho.png" width: 25px; height : 25px;/></div>';
+            }else{
+            $output .= '<div class = "tile ' . $tileType . '"></div>';
+
+            }
         }
     }
+
     return $output;
+
 }
+//Lógica de negocio
+//El tablero es un array bidimensional en el que cada fila contiene 12 palabras cuyos valores pueden ser:
+// agua
+//fuego
+//tierra
+// hierba
+function leerArchivoCSV($rutaArchivoCSV) {
+    $tablero = [];
 
-/* Lógica de negocio */
-// Leer tablero desde CSV
-
-$tableroCSV = 'archivo.csv';
-$tablero = [];
-
-if (($arch = fopen($tableroCSV, 'r')) !== false) {
-    while (($fila = fgetcsv($arch)) !== false) {
-        $tablero[] = $fila; // Añadimos la fila al tablero
+    if (($puntero = fopen($rutaArchivoCSV, "r")) !== FALSE) {
+        while (($datosFila = fgetcsv($puntero)) !== FALSE) {
+            $tablero[] = $datosFila;
+        }
+        fclose($puntero);
     }
-    fclose($arch);
+
+    return $tablero;
 }
 
-/* Lógica de presentación */
+
+
+
+
+
+$tablero = leerArchivoCSV('archivo.csv');
+
+//Lógica de presentación
 $tableroMarkup = getTableroMarkup($tablero);
+
 
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero DWES</title>
+    <!-- Minified version -->
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <title>Document</title>
     <style>
-        .contenedorTablero{
-            width:604px;
-            height: 604px;
-            border-radius: 5px;
+        .contenedorTablero {
+            width:600px;
+            height:600px;
             border: solid 2px grey;
             box-shadow: grey;
+            display:grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(12, 1fr);
         }
-        .tile{
-            width: 50px;
-            height: 50px;
-            float:left;
-            margin:0;
-            padding:0;
-            border-width:0;
+        .tile {
+            float: left;
+            margin: 0;
+            padding: 0;
+            border-width: 0;
+            background-image: url("464.jpg");
+            background-size: 209px;
+            background-repeat: none;
         }
-        .fuego{
-            background-color:red;
+        .fuego {
+            background-position: -105px -52px;
         }
-        .tierra{
-            background-color:brown;
+        .tierra {
+            background-position: -157px 0px;
         }
-        .agua{
-            background-color:blue;
+        .agua {
+            background-position: -53px 0px;
         }
-        .hierba{
-            background-color:green;
+        .hierba {
+            background-position: 0px 0px;
         }
     </style>
 </head>
