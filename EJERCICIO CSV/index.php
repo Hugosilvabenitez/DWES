@@ -1,59 +1,37 @@
 <?php
 
-/* Inicialización del entorno */
+/***** Inicialización del entorno ******/
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+
 /* Zona de declaración de funciones */
-//Funciones de debugueo
+//*******Funciones de debugueo****
 function dump($var){
     echo '<pre>'.print_r($var,1).'</pre>';
 }
 
-$personaje=random_int(0,144);
-
-
-
-//Función lógica presentación
-function getTableroMarkup ($tablero,$fila,$col){
+//*******Función lógica presentación**********+
+function getTableroMarkup ($tablero, $posPersonaje){
     $output = '';
-    $contFila = 0;
-    $contCol = 0;
-
-    //dump($tablero);
     foreach ($tablero as $filaIndex => $datosFila) {
-        $contFila++;
         foreach ($datosFila as $columnaIndex => $tileType) {
-
-            //dump($tileType);
-            $contCol++;
-            
-            if($contFila == $fila && $contCol==$col){
-            $output .= '<div class = "tile ' . $tileType . '"><img src="bicho.png" width: 25px; height : 25px;/></div>';
+            if(isset($posPersonaje)&&($filaIndex == $posPersonaje['row'])&&($columnaIndex == $posPersonaje['col'])){
+                $output .= '<div class = "tile ' . $tileType . '"><img src="bicho.png"></div>';    
             }else{
-            $output .= '<div class = "tile ' . $tileType . '"></div>';
-
+                $output .= '<div class = "tile ' . $tileType . '"></div>';
             }
         }
-        $contCol = 0;
     }
-
     return $output;
-
 }
-//Lógica de negocio
+//******+Función Lógica de negocio************
 //El tablero es un array bidimensional en el que cada fila contiene 12 palabras cuyos valores pueden ser:
 // agua
 //fuego
 //tierra
 // hierba
-
-
-
-
-
-
 function leerArchivoCSV($rutaArchivoCSV) {
     $tablero = [];
 
@@ -66,19 +44,30 @@ function leerArchivoCSV($rutaArchivoCSV) {
 
     return $tablero;
 }
+function leerInput(){
+    
+    $col = filter_input(INPUT_GET, 'col', FILTER_VALIDATE_INT);
+    $row = filter_input(INPUT_GET, 'row', FILTER_VALIDATE_INT);
+
+    return (isset($col) && isset($row))? array(
+            'row' => $row,
+            'col' => $col
+        ) : null;    
+}
+//*****Lógica de negocio***********
+//Extracción de las variables de la petición
 
 
+$posPersonaje = leerInput();
 
-$fila=$_GET['fila'];
-$col=$_GET['col'];
-
-
-
-
+dump('$posPersonaje');
+dump($posPersonaje);
 $tablero = leerArchivoCSV('archivo.csv');
 
-//Lógica de presentación
-$tableroMarkup = getTableroMarkup($tablero,$fila,$col);
+
+
+//*****+++Lógica de presentación*******
+$tableroMarkup = getTableroMarkup($tablero, $posPersonaje);
 
 
 ?>
@@ -108,17 +97,25 @@ $tableroMarkup = getTableroMarkup($tablero,$fila,$col);
             background-image: url("464.jpg");
             background-size: 209px;
             background-repeat: none;
+            overflow: hidden;
+        }
+        .tile img{
+            max-width:100%;
         }
         .fuego {
+            background-color: red;
             background-position: -105px -52px;
         }
         .tierra {
+            background-color: brown;
             background-position: -157px 0px;
         }
         .agua {
+            background-color: blue;
             background-position: -53px 0px;
         }
         .hierba {
+            background-color: green;
             background-position: 0px 0px;
         }
     </style>
