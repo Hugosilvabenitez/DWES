@@ -26,6 +26,34 @@ function getTableroMarkup ($tablero, $posPersonaje){
     }
     return $output;
 }
+
+function getMensajeMarkup ($arrayMensajes){
+    $output = ' ';
+
+    foreach ($arrayMensajes as $mensaje){
+        $output .= '<p>' .$mensaje. '</p>';
+    }
+
+    return $output;
+
+}
+
+function getArrowsMarkup($posPersonaje){
+    $arriba = '?row=' . ($posPersonaje['row'] - 1) . '&col=' . $posPersonaje['col'];
+    $abajo = '?row=' . ($posPersonaje['row'] + 1) . '&col=' . $posPersonaje['col'];
+    $derecha = '?row=' . $posPersonaje['row'] . '&col=' . ($posPersonaje['col'] + 1);
+    $izquierda = '?row=' . $posPersonaje['row'] . '&col=' . ($posPersonaje['col'] - 1);
+
+    $output = '
+        <a href="' . $arriba . '"><button>Arriba</button></a><br>
+        <a href="' . $abajo . '"><button>Abajo</button></a><br>
+        <a href="' . $derecha . '"><button>Derecha</button></a><br>
+        <a href="' . $izquierda . '"><button>Izquierda</button></a>
+    ';
+    
+    return $output;
+}
+
 //******+Función Lógica de negocio************
 //El tablero es un array bidimensional en el que cada fila contiene 12 palabras cuyos valores pueden ser:
 // agua
@@ -49,10 +77,22 @@ function leerInput(){
     $col = filter_input(INPUT_GET, 'col', FILTER_VALIDATE_INT);
     $row = filter_input(INPUT_GET, 'row', FILTER_VALIDATE_INT);
 
-    return (isset($col) && isset($row))? array(
+   
+    return (isset($col) && is_numeric($col) && isset($row) && is_numeric($row))? array(
             'row' => $row,
             'col' => $col
         ) : null;    
+
+
+}
+
+function getMensaje ($posPersonaje){
+
+    if (!isset($posPersonaje)){
+        return array('La posición del personaje no está bien definida');
+    }
+
+    return array(' ');
 }
 //*****Lógica de negocio***********
 //Extracción de las variables de la petición
@@ -60,14 +100,16 @@ function leerInput(){
 
 $posPersonaje = leerInput();
 
-dump('$posPersonaje');
-dump($posPersonaje);
+// dump('$posPersonaje');
+// dump($posPersonaje);
 $tablero = leerArchivoCSV('archivo.csv');
+$mensaje = getMensaje($posPersonaje);
 
 
 
 //*****+++Lógica de presentación*******
 $tableroMarkup = getTableroMarkup($tablero, $posPersonaje);
+$mensajesUsuarioMarkup = getMensajeMarkup ($mensaje);
 
 
 ?>
@@ -78,7 +120,7 @@ $tableroMarkup = getTableroMarkup($tablero, $posPersonaje);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Minified version -->
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-    <title>Document</title>
+    <title>Tablero</title>
     <style>
         .contenedorTablero {
             width:600px;
@@ -124,6 +166,14 @@ $tableroMarkup = getTableroMarkup($tablero, $posPersonaje);
     <h1>Tablero juego super rol DWES</h1>
     <div class="contenedorTablero">
         <?php echo $tableroMarkup; ?>
+    </div>
+    <br>
+    <div>
+    <?php echo getArrowsMarkup($posPersonaje); ?>
+    </div>
+    <br>
+    <div>
+        <?php echo $mensajesUsuarioMarkup; ?>
     </div>
 </body>
 </html>
